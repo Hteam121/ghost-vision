@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import styled, { createGlobalStyle, keyframes, css } from 'styled-components';
 import { useMediaQuery } from 'react-responsive';
 import { useInView } from 'react-intersection-observer';
+import SlidesPage from './components/SlidesPage';
 
 // Global styles
 const GlobalStyle = createGlobalStyle`
@@ -166,6 +167,13 @@ const Subtitle = styled(motion.p)`
   line-height: 1.6;
 `;
 
+const ButtonContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 15px;
+`;
+
 const GhostlyButton = styled(motion.button)`
   padding: 12px 30px;
   font-size: 1.1rem;
@@ -197,7 +205,7 @@ const GhostlyButton = styled(motion.button)`
 `;
 
 const StepsSection = styled.section`
-  padding: ${props => props.isMobile ? '60px 20px' : '100px 50px'};
+  padding: ${props => props.$isMobile ? '60px 20px' : '100px 50px'};
   background: linear-gradient(to bottom, rgba(25, 25, 112, 0.8), rgba(138, 43, 226, 0.4));
   position: relative;
   
@@ -218,7 +226,7 @@ const StepsSection = styled.section`
 `;
 
 const SectionTitle = styled(motion.h2)`
-  font-size: ${props => props.isMobile ? '2rem' : '3rem'};
+  font-size: ${props => props.$isMobile ? '2rem' : '3rem'};
   text-align: center;
   margin-bottom: 50px;
   position: relative;
@@ -237,9 +245,9 @@ const SectionTitle = styled(motion.h2)`
 
 const StepsContainer = styled.div`
   display: flex;
-  flex-direction: ${props => props.isMobile ? 'column' : 'row'};
+  flex-direction: ${props => props.$isMobile ? 'column' : 'row'};
   justify-content: space-around;
-  align-items: ${props => props.isMobile ? 'center' : 'stretch'};
+  align-items: ${props => props.$isMobile ? 'center' : 'stretch'};
   gap: 30px;
   max-width: 1200px;
   margin: 0 auto;
@@ -306,7 +314,7 @@ const StepDescription = styled.p`
 `;
 
 const FeaturesSection = styled.section`
-  padding: ${props => props.isMobile ? '60px 20px' : '100px 50px'};
+  padding: ${props => props.$isMobile ? '60px 20px' : '100px 50px'};
   background: linear-gradient(to top, rgba(25, 25, 112, 0.8), rgba(138, 43, 226, 0.4));
   position: relative;
   
@@ -328,7 +336,7 @@ const FeaturesSection = styled.section`
 
 const FeaturesContainer = styled.div`
   display: grid;
-  grid-template-columns: ${props => props.isMobile ? '1fr' : 'repeat(3, 1fr)'};
+  grid-template-columns: ${props => props.$isMobile ? '1fr' : 'repeat(3, 1fr)'};
   gap: 30px;
   max-width: 1200px;
   margin: 0 auto;
@@ -428,6 +436,7 @@ const ProjectsLink = styled.a`
 function App() {
   const isMobile = useMediaQuery({ maxWidth: 768 });
   const [isLoaded, setIsLoaded] = useState(false);
+  const [showSlidesPage, setShowSlidesPage] = useState(false);
   
   const [heroRef, heroInView] = useInView({
     triggerOnce: true,
@@ -454,6 +463,11 @@ function App() {
   // Function to handle scroll to steps section
   const scrollToSteps = () => {
     stepsRef.current.scrollIntoView({ behavior: 'smooth' });
+  };
+  
+  // Function to toggle slides page
+  const toggleSlidesPage = () => {
+    setShowSlidesPage(!showSlidesPage);
   };
 
   useEffect(() => {
@@ -524,42 +538,57 @@ function App() {
           ) : null}
         </AnimatePresence>
 
-        <HeroSection ref={heroRef}>
-          <VideoBackground autoPlay loop muted playsInline>
-            <source src="/assets/LoopVid.mp4" type="video/mp4" />
-          </VideoBackground>
-          
-          <HeroContent
-            variants={fadeInUp}
-            initial="hidden"
-            animate={heroInView ? "visible" : "hidden"}
-          >
-            <Title 
-              $isMobile={isMobile}
-              variants={fadeInUp}
-            >
-              GhostVision
-            </Title>
-            <Subtitle 
-              $isMobile={isMobile}
-              variants={fadeInUp}
-            >
-              Redefining safety and privacy with cutting-edge radar technology and machine learning
-            </Subtitle>
-            <GhostlyButton
-              variants={fadeInUp}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={scrollToSteps}
-            >
-              Discover More
-            </GhostlyButton>
-          </HeroContent>
-        </HeroSection>
+        {showSlidesPage ? (
+          <SlidesPage $isMobile={isMobile} goBack={toggleSlidesPage} />
+        ) : (
+          <>
+            <HeroSection ref={heroRef}>
+              <VideoBackground autoPlay loop muted playsInline>
+                <source src="/assets/LoopVid.mp4" type="video/mp4" />
+              </VideoBackground>
+              
+              <HeroContent
+                variants={fadeInUp}
+                initial="hidden"
+                animate={heroInView ? "visible" : "hidden"}
+              >
+                <Title 
+                  $isMobile={isMobile}
+                  variants={fadeInUp}
+                >
+                  GhostVision
+                </Title>
+                <Subtitle 
+                  $isMobile={isMobile}
+                  variants={fadeInUp}
+                >
+                  Redefining safety and privacy with cutting-edge radar technology and machine learning
+                </Subtitle>
+                <ButtonContainer>
+                  <GhostlyButton
+                    variants={fadeInUp}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={scrollToSteps}
+                  >
+                    Discover More
+                  </GhostlyButton>
+                  <GhostlyButton
+                    variants={fadeInUp}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={toggleSlidesPage}
+                    style={{ marginLeft: '15px', background: 'rgba(63, 81, 181, 0.7)' }}
+                  >
+                    View Slides
+                  </GhostlyButton>
+                </ButtonContainer>
+              </HeroContent>
+            </HeroSection>
 
-        <StepsSection isMobile={isMobile} ref={setStepsRefs}>
+        <StepsSection $isMobile={isMobile} ref={setStepsRefs}>
           <SectionTitle 
-            isMobile={isMobile}
+            $isMobile={isMobile}
             variants={fadeInUp}
             initial="hidden"
             animate={stepsInView ? "visible" : "hidden"}
@@ -568,7 +597,7 @@ function App() {
           </SectionTitle>
           
           <StepsContainer 
-            isMobile={isMobile}
+            $isMobile={isMobile}
             variants={staggerContainer}
             initial="hidden"
             animate={stepsInView ? "visible" : "hidden"}
@@ -614,9 +643,9 @@ function App() {
           </StepsContainer>
         </StepsSection>
 
-        <FeaturesSection isMobile={isMobile} ref={featuresRef}>
+        <FeaturesSection $isMobile={isMobile} ref={featuresRef}>
           <SectionTitle 
-            isMobile={isMobile}
+            $isMobile={isMobile}
             variants={fadeInUp}
             initial="hidden"
             animate={featuresInView ? "visible" : "hidden"}
@@ -625,7 +654,7 @@ function App() {
           </SectionTitle>
           
           <FeaturesContainer 
-            isMobile={isMobile}
+            $isMobile={isMobile}
             variants={staggerContainer}
             initial="hidden"
             animate={featuresInView ? "visible" : "hidden"}
@@ -656,16 +685,18 @@ function App() {
           </FeaturesContainer>
         </FeaturesSection>
 
-        <Footer>
-          <FooterText>© 2025 GhostVision. All rights reserved. Privacy meets protection, effortlessly.</FooterText>
-          <ProjectsLink 
-            href="https://shaikhatim.com/projects" 
-            target="_blank" 
-            rel="noopener noreferrer"
-          >
-            See My Other Projects
-          </ProjectsLink>
-        </Footer>
+            <Footer>
+              <FooterText>© 2025 GhostVision. All rights reserved. Privacy meets protection, effortlessly.</FooterText>
+              <ProjectsLink 
+                href="https://shaikhatim.com/projects" 
+                target="_blank" 
+                rel="noopener noreferrer"
+              >
+                See My Other Projects
+              </ProjectsLink>
+            </Footer>
+          </>
+        )}
       </AppContainer>
     </>
   );
